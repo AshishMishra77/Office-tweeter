@@ -1,0 +1,78 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+/* ✨ Team Member Card Hover Animation */
+.member-card {
+    background-color: var(--card-bg, #f8f9fa);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border-radius: 16px;
+    padding: 1rem;
+}
+
+.member-card:hover {
+    transform: translateY(-6px) rotate(1deg);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* 🌙 Dark Mode Styling */
+body.dark .member-card {
+    background-color: #1f1f1f;
+    border: 1px solid #333;
+}
+
+body.dark .member-card:hover {
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.08);
+}
+
+/* 🎯 Avatar Styling */
+.member-photo {
+    transition: transform 0.3s ease;
+    border: 3px solid #fff;
+}
+
+.member-card:hover .member-photo {
+    transform: scale(1.08) rotate(-3deg);
+    border-color: #ffb703;
+}
+</style>
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4 fw-bold text-primary">🏢 Our Teams</h2>
+
+    {% for team in teams %}
+    <div class="card shadow-sm mb-4 rounded-4 border-0">
+        <div class="card-body">
+            <h4 class="text-success mb-2">{{ team.name }}</h4>
+            {% if team.description %}
+                <p class="text-muted">{{ team.description }}</p>
+            {% endif %}
+
+            <div class="row">
+                {% for profile in team.profile_set.all %}
+                <div class="col-md-3 col-sm-6 text-center mb-4">
+                    <div class="member-card h-100">
+                        {% if profile.photo %}
+                            <img src="{{ profile.photo.url }}" alt="{{ profile.user.username }}"
+                                 class="rounded-circle mb-2 member-photo" width="90" height="90">
+                        {% else %}
+                            <img src="{% static 'images/default-avatar.png' %}" alt="default user"
+                                 class="rounded-circle mb-2 member-photo" width="90" height="90">
+                        {% endif %}
+                        <h6 class="fw-bold mb-0 mt-2">{{ profile.user.username }}</h6>
+                        <small class="text-secondary d-block">{{ profile.job_title|default:"—" }}</small>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted">No members in this team yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-center text-muted">No teams have been created yet.</p>
+    {% endfor %}
+</div>
+
+{% endblock %}

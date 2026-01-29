@@ -1,0 +1,124 @@
+{% extends 'layout.html' %}
+{% block title %}{{ form.instance.id|yesno:"Edit Tweet,Create Tweet" }} | ChaiBreak{% endblock %}
+
+{% block content %}
+<div class="container mt-5 d-flex justify-content-center align-items-center" style="min-height: 75vh;">
+  <div class="card shadow-lg border-0 rounded-4 p-4 tweet-form-card" style="max-width: 600px; width: 100%;">
+    
+    <h3 class="fw-bold text-center mb-3">
+      {% if form.instance.id %}
+        ✏️ Edit Tweet
+      {% else %}
+        📝 Create a New Tweet
+      {% endif %}
+    </h3>
+
+    <form method="POST" enctype="multipart/form-data" class="mt-3">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label class="form-label fw-semibold">What's on your mind?</label>
+        {{ form.text }}
+      </div>
+
+      {% if tweet %}
+      <!-- 🖼 Existing Images -->
+      {% if existing_images %}
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Current Photos:</label>
+        <div class="d-flex flex-wrap gap-3">
+          {% for img in existing_images %}
+          <div class="position-relative" style="width:120px;">
+            <img src="{{ img.image.url }}" alt="Tweet Image"
+                 class="rounded-4 border"
+                 style="width:120px; height:120px; object-fit:cover;">
+            <div class="form-check position-absolute top-0 start-0 m-1 bg-white rounded-pill px-1">
+              <input class="form-check-input" type="checkbox" name="delete_images" value="{{ img.id }}" id="delete_{{ img.id }}">
+              <label class="form-check-label small text-danger" for="delete_{{ img.id }}">✕</label>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <small class="text-muted d-block mt-2">Select photos you want to delete.</small>
+      </div>
+      {% endif %}
+      {% endif %}
+
+      <!-- 🆕 Add New Photos -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Add New Photos (optional)</label>
+        <input type="file" name="images" id="id_images" class="form-control" multiple>
+      </div>
+
+      <div class="text-center mt-4">
+        <button type="submit" class="btn btn-success px-4 rounded-pill me-2">
+          {% if form.instance.id %}Update Tweet{% else %}Post Tweet{% endif %}
+        </button>
+        <a href="{% url 'index' %}" class="btn btn-secondary px-4 rounded-pill">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+
+{% block extra_head %}
+<style>
+  /* 🌟 Tweet Form Styling */
+  .tweet-form-card {
+    animation: fadeInUp 0.6s ease;
+    background-color: #fff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .tweet-form-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  textarea {
+    resize: none;
+    min-height: 100px;
+  }
+
+  /* 🌗 Dark Mode Adjustments */
+  body.dark .tweet-form-card {
+    background-color: #1f1f1f;
+    color: #eaeaea;
+    box-shadow: 0 6px 25px rgba(255, 255, 255, 0.05);
+  }
+
+  body.dark .form-label {
+    color: #ccc;
+  }
+
+  body.dark textarea,
+  body.dark input[type="file"] {
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    color: #eee;
+  }
+
+  body.dark .btn-success {
+    background-color: #22c55e;
+    border: none;
+  }
+
+  body.dark .btn-secondary {
+    background-color: #333;
+    border: 1px solid #444;
+    color: #fff;
+  }
+
+  /* ✨ Animation */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(25px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends 'layout.html' %}
+{% block title %}Home | ChaiBreak{% endblock %}
+
+{% block content %}
+  <h2>Welcome to ChaiBreak!</h2>
+  <p>Share your thoughts with your colleagues ☕</p>
+
+  <a class="btn btn-primary mb-4" href="{% url 'tweet_create' %}">Create a New Tweet</a>
+
+  <!-- 🧩 Tweets Grid Container -->
+  <div class="tweet-grid">
+    {% for tweet in tweets %}
+      <div class="card tweet-card">
+        {% if tweet.photo %}
+          <img class="card-img-top" src="{{ tweet.photo.url }}" alt="Card image cap">
+        {% endif %}
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">{{ tweet.user.username }}</h5>
+          <p class="card-text flex-grow-1">{{ tweet.text }}</p>
+          {% if tweet.user == user %}
+            <div>
+              <a href="{% url 'tweet_edit' tweet.id %}" class="btn btn-primary btn-sm me-2">Edit</a>
+              <a href="{% url 'tweet_delete' tweet.id %}" class="btn btn-danger btn-sm">Delete</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* 🧱 Grid Layout for Tweets */
+  .tweet-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: flex-start;
+    align-items: stretch;
+  }
+
+  /* 🎴 Card Styling */
+  .tweet-card {
+    width: 18rem;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+  }
+
+
+  .tweet-card img {
+    height: 180px;
+    object-fit: cover;
+  }
+
+  .tweet-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  .tweet-card .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .tweet-card .card-text {
+    margin-bottom: 1rem;
+  }
+
+  /* 🌗 Dark Mode Adjustments */
+  body.dark .tweet-card {
+    background-color: #1e1e1e;
+    border-color: #333;
+    color: #eaeaea;
+  }
+
+  body.dark .tweet-card:hover {
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+  }
+
+  body.dark .tweet-card .card-text {
+    color: #ddd;
+  }
+
+  body.dark .tweet-card .btn-primary {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+  }
+
+  body.dark .tweet-card .btn-danger {
+    background-color: #ef4444;
+    border-color: #ef4444;
+  }
+</style>
+{% endblock %}

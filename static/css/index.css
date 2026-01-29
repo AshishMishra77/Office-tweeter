@@ -1,0 +1,133 @@
+:root {
+  --bg: #f8f9fa;
+  --text: #222;
+  --primary: #4b3f72;
+  --accent: #ffb703;
+  --card-bg: #fff;
+  --border: #e0e0e0;
+}
+
+body.dark {
+  --bg: #1e1e1e;
+  --text: #eaeaea;
+  --card-bg: #2c2c2c;
+  --border: #444;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ------Profile View----- */
+
+.toast {
+  z-index: 1055;
+  opacity: 0.95;
+}
+
+body.dark-mode .toast {
+  background-color: #333;
+  color: white;
+}
+
+body.dark-mode .card {
+  background-color: #222;
+  color: white;
+  border-color: #444;
+}
+
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+/* Navbar */
+.navbar {
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.logo {
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+.nav-links {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+.nav-links a {
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 500;
+}
+.theme-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+/* Main content area */
+.main-content {
+  padding: 2rem 0;
+}
+
+/* Cards / posts */
+.post-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.post-card h3 {
+  margin: 0 0 0.5rem;
+}
+.post-card p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  border-top: 1px solid var(--border);
+  padding: 1rem 0;
+  font-size: 0.9rem;
+  color: #777;
+}
+/* Make header fixed and sticky */
+header.navbar.fixed-top {
+  position: sticky;
+  top: 0;
+  z-index: 1050; /* stay above all content */
+  background: #ffffff;
+  border-bottom: 1px solid #ddd;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Add shadow when scrolling */
+body.scrolled header.navbar {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Fix main content top margin (so it doesn’t hide under navbar) */
+.main-content {
+  margin-top: 90px; /* adjust depending on header height */
+}
+
+/* Dark mode sticky header */
+body.dark header.navbar {
+  background: #1f1f1f;
+  border-bottom: 1px solid #333;
+}

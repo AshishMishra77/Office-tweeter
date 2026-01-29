@@ -1,0 +1,177 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block title %}My Profile | ChaiBreak{% endblock %}
+
+{% block content %}
+<div class="profile-container py-4">
+  <div class="card profile-card shadow-sm border-0 rounded-4 p-4 animate__animated animate__fadeInUp">
+    
+    <div class="text-center mb-4 position-relative">
+      {% if profile.photo %}
+        <div class="profile-photo-wrapper mx-auto mb-3">
+          <img src="{{ profile.photo.url }}" 
+               class="profile-photo rounded-circle border border-3 border-primary shadow-sm"
+               alt="Profile Picture">
+        </div>
+      {% else %}
+        <div class="profile-photo-placeholder mx-auto mb-3">
+          <i class="bi bi-person-circle text-secondary" style="font-size: 5rem;"></i>
+        </div>
+      {% endif %}
+
+      <h3 class="fw-bold">{{ request.user.username }}</h3>
+      <p class="text-muted mb-1">{{ profile.job_title|default:"No title yet" }}</p>
+      <p class="small text-secondary">{{ profile.department|default:"No department" }}</p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="mt-3">
+      {% csrf_token %}
+      <div class="row gy-3">
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Job Title</label>
+          <div class="form-control-wrapper">
+            {{ form.job_title }}
+          </div>
+        </div>
+
+        <!-- <div class="col-md-6">
+          <label class="form-label fw-semibold">Department</label>
+          <div class="form-control-wrapper">
+            {{ form.department }}
+          </div>
+        </div> -->
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Team</label>
+          <div class="form-control-wrapper">
+            {{ form.team }}
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Profile Photo</label>
+          <div class="form-control-wrapper">
+            {{ form.photo }}
+          </div>
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-semibold">Bio</label>
+          <div class="form-control-wrapper">
+            {{ form.bio }}
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mt-4">
+        <button type="submit" class="btn btn-primary rounded-pill px-5 py-2 shadow-sm profile-btn">
+          Update Profile
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 🔮 Styles -->
+<style>
+  /* Centered container matching tweet width */
+  .profile-container {
+    max-width: 700px;
+    margin: auto;
+  }
+
+  /* Card styling */
+  .profile-card {
+    background: #ffffff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .profile-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  }
+
+  /* Profile Image */
+  .profile-photo-wrapper {
+    width: 120px;
+    height: 120px;
+    position: relative;
+  }
+
+  .profile-photo {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .profile-photo:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0,123,255,0.3);
+  }
+
+  /* Placeholder for users without photo */
+  .profile-photo-placeholder {
+    width: 120px;
+    height: 120px;
+    background: #eaeaea;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Input fields animation */
+  .form-control-wrapper input,
+  .form-control-wrapper textarea,
+  .form-control-wrapper select {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .form-control-wrapper input:focus,
+  .form-control-wrapper textarea:focus,
+  .form-control-wrapper select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0,123,255,0.2);
+    outline: none;
+  }
+
+  /* Save button */
+  .profile-btn {
+    transition: all 0.3s ease;
+  }
+  .profile-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,123,255,0.3);
+  }
+
+  /* Dark Mode Support */
+  body.dark .profile-card {
+    background: #1e1e1e;
+    color: #eaeaea;
+    border-color: #333;
+  }
+
+  body.dark .form-control-wrapper input,
+  body.dark .form-control-wrapper textarea,
+  body.dark .form-control-wrapper select {
+    background-color: #2a2a2a;
+    color: #eaeaea;
+    border: 1px solid #444;
+  }
+
+  body.dark .profile-photo-placeholder {
+    background: #333;
+  }
+
+  body.dark .profile-btn {
+    background: #007bff;
+    color: #fff;
+  }
+</style>
+
+<!-- 🪄 Optional animation library (Fade-In effect) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+{% endblock %}

@@ -1,0 +1,291 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block title %}Home | ChaiBreak{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <!-- <h2 class="fw-bold text-center mb-4">☕ Welcome to ChaiBreak!</h2>
+  <p class="text-center text-muted mb-5">Share your thoughts and moments with your colleagues.</p> -->
+
+  <!-- 📰 Tweets Feed -->
+  <div class="tweet-feed">
+    {% for tweet in tweets %}
+    <div class="card tweet-card shadow-sm rounded-4 mb-4">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-3">
+          {% if tweet.user.profile.photo %}
+            <img src="{{ tweet.user.profile.photo.url }}" alt="Profile" class="rounded-circle me-2 profile-img">
+          {% else %}
+            <div class="rounded-circle bg-secondary me-2" style="width:40px; height:40px;"></div>
+          {% endif %}
+          <div>
+            <h6 class="mb-0 fw-semibold">{{ tweet.user.username }}</h6>
+            <small class="text-muted">{{ tweet.created_at|date:"M d, Y · H:i" }}</small>
+          </div>
+        </div>
+
+        <p class="tweet-text mb-3">{{ tweet.text }}</p>
+
+        <!-- 🖼 Show multiple images -->
+        {% if tweet.images.all %}
+        <div class="tweet-photo-wrapper d-flex flex-wrap gap-2">
+          {% for img in tweet.images.all %}
+            <img src="{{ img.image.url }}"
+                 alt="Tweet Photo"
+                 class="tweet-photo rounded-4"
+                 style="width:150px; height:150px; object-fit:cover; cursor:pointer;"
+                 onclick="openLightbox('{{ img.image.url }}')">
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if user == tweet.user %}
+        <div class="mt-3">
+          <a href="{% url 'tweet_edit' tweet.id %}" class="btn btn-outline-secondary btn-sm rounded-pill me-2">✏️ Edit</a>
+          <a href="{% url 'tweet_delete' tweet.id %}" class="btn btn-outline-danger btn-sm rounded-pill">🗑️ Delete</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% empty %}
+    <p class="text-center text-muted mt-5">No thoughts shared yet. Be the first to drop one ☕</p>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- 🧃 Sticky Tweet Creation Bar -->
+{% if user.is_authenticated %}
+<div class="tweet-sticky-wrapper">
+  <div id="tweetStickyForm" class="tweet-sticky-form shadow-lg rounded-4">
+    <form method="POST" enctype="multipart/form-data" class="d-flex align-items-center gap-3 w-100">
+      {% csrf_token %}
+      <!-- 🔹 Allow multiple image uploads -->
+      <label for="id_images" class="btn btn-outline-secondary btn-sm rounded-circle mb-0 d-flex align-items-center justify-content-center"
+             style="width:42px; height:42px;">
+        <span class="fs-5">＋</span>
+      </label>
+      <input type="file" name="images" id="id_images" class="d-none" multiple>
+
+      <input type="text" name="text" class="form-control rounded-pill" placeholder="Share your thoughts..." required>
+      <button type="submit" class="btn btn-primary rounded-pill px-4">Share</button>
+    </form>
+  </div>
+
+  <!-- Floating Button -->
+  <button id="floatingCreateBtn" class="floating-btn">
+    ＋
+  </button>
+</div>
+{% endif %}
+
+<!-- 🔍 Lightbox Modal -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+  <img id="lightbox-img" src="" alt="Zoomed Tweet Image">
+</div>
+
+<style>
+  /* ========== Layout ========== */
+  .tweet-feed {
+    max-width: 700px;
+    margin: auto;
+  }
+
+  .tweet-card {
+    background-color: #ffffff;
+    transition: transform 0.25s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+  }
+
+  .tweet-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  }
+
+  .tweet-text {
+    font-size: 1rem;
+    color: #333;
+    white-space: pre-line;
+  }
+
+  .profile-img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+  }
+
+  /* ========== Sticky Tweet Creation ========== */
+  .tweet-sticky-wrapper {
+    position: sticky;
+    bottom: 15px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    z-index: 1050;
+  }
+
+  .tweet-sticky-form {
+    backdrop-filter: blur(8px);
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0,0,0,0.08);
+    max-width: 700px;
+    width: 100%;
+    margin: auto;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+  }
+
+  .tweet-sticky-form.hidden {
+    opacity: 0;
+    transform: translateY(120%);
+    pointer-events: none;
+  }
+
+  .floating-btn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 58px;
+    height: 58px;
+    font-size: 2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    z-index: 1100;
+  }
+
+  .floating-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+  }
+
+  /* Hide floating button on large screens */
+  @media (min-width: 992px) {
+    .floating-btn { display: none; }
+  }
+
+  /* Hide sticky form by default on mobile */
+  @media (max-width: 991px) {
+    .tweet-sticky-form { display: none; }
+    .tweet-sticky-form.active {
+      display: flex;
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      background-color: rgba(255,255,255,0.95);
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    }
+  }
+
+  /* ========== Image Zoom ========== */
+  .tweet-photo-wrapper {
+    overflow: hidden;
+    border-radius: 12px;
+  }
+
+  .tweet-photo {
+    max-width: 100%;
+    height: auto;
+    transition: transform 0.4s ease;
+    cursor: zoom-in;
+  }
+
+  .tweet-photo:hover {
+    transform: scale(1.05);
+  }
+
+  /* ========== Lightbox ========== */
+  .lightbox {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    padding: 40px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.9);
+    text-align: center;
+  }
+
+  .lightbox img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 12px;
+    animation: zoomIn 0.3s ease;
+  }
+
+  @keyframes zoomIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  /* ========== Dark Mode ========== */
+  body.dark .tweet-card,
+  body.dark .tweet-sticky-form {
+    background-color: rgba(30,30,30,0.85);
+    color: #eaeaea;
+    border-color: #333;
+    backdrop-filter: blur(8px);
+  }
+
+  body.dark .tweet-text {
+    color: #ddd;
+  }
+
+  body.dark .tweet-card:hover {
+    box-shadow: 0 4px 15px rgba(255,255,255,0.1);
+  }
+
+  body.dark .floating-btn {
+    background-color: #2563eb;
+  }
+
+  body.dark .lightbox {
+    background-color: rgba(0, 0, 0, 0.95);
+  }
+</style>
+
+<script>
+  // 🌟 Lightbox JS
+  function openLightbox(imageUrl) {
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightbox-img");
+    lightboxImg.src = imageUrl;
+    lightbox.style.display = "block";
+  }
+
+  function closeLightbox() {
+    document.getElementById("lightbox").style.display = "none";
+  }
+
+  document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") closeLightbox();
+  });
+
+  // 📱 Floating Button Logic
+  const floatingBtn = document.getElementById("floatingCreateBtn");
+  const tweetForm = document.getElementById("tweetStickyForm");
+
+  if (floatingBtn) {
+    floatingBtn.addEventListener("click", () => {
+      tweetForm.classList.toggle("active");
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!tweetForm.contains(e.target) && !floatingBtn.contains(e.target)) {
+        tweetForm.classList.remove("active");
+      }
+    });
+  }
+</script>
+{% endblock %}

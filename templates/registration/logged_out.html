@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <h2 class="mb-4">Logout</h2>
+    <p>Are you sure you want to log out? <a href ="{% url 'login' %}">Login Here</a></p>
+
+        <button type="submit" class="btn btn-danger">Logout</button>
+        <a href="{% url 'index' %}" class="btn btn-secondary ms-2">Cancel</a>
+   
+</div>
+{% endblock %}
